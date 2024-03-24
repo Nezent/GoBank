@@ -27,20 +27,3 @@ RETURNING *;
 DELETE FROM users
 WHERE id = $1;
 
--- name: CreateTransfer :one
-INSERT INTO transfers (
-  from_user_id, 
-  to_user_id,
-  amount
-) VALUES (
-  $1, $2, $3
-) RETURNING *;
-
-
--- name: CreateEntry :one
-INSERT INTO entries (
-  user_id, 
-  amount
-) VALUES (
-  $1, $2
-) RETURNING *;

@@ -9,61 +9,6 @@ import (
 	"context"
 )
 
-const createEntry = `-- name: CreateEntry :one
-INSERT INTO entries (
-  user_id, 
-  amount
-) VALUES (
-  $1, $2
-) RETURNING entries_id, user_id, amount, created_at
-`
-
-type CreateEntryParams struct {
-	UserID int64 `json:"user_id"`
-	Amount int64 `json:"amount"`
-}
-
-func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error) {
-	row := q.db.QueryRowContext(ctx, createEntry, arg.UserID, arg.Amount)
-	var i Entry
-	err := row.Scan(
-		&i.EntriesID,
-		&i.UserID,
-		&i.Amount,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const createTransfer = `-- name: CreateTransfer :one
-INSERT INTO transfers (
-  from_user_id, 
-  to_user_id,
-  amount
-) VALUES (
-  $1, $2, $3
-) RETURNING transfer_id, from_user_id, to_user_id, amount, created_at
-`
-
-type CreateTransferParams struct {
-	FromUserID int64 `json:"from_user_id"`
-	ToUserID   int64 `json:"to_user_id"`
-	Amount     int64 `json:"amount"`
-}
-
-func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
-	row := q.db.QueryRowContext(ctx, createTransfer, arg.FromUserID, arg.ToUserID, arg.Amount)
-	var i Transfer
-	err := row.Scan(
-		&i.TransferID,
-		&i.FromUserID,
-		&i.ToUserID,
-		&i.Amount,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
   username, 
