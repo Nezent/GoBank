@@ -56,7 +56,35 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 	var result TransferResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
-		
+		var err error
+
+		result.Transfer, err = q.CreateTransfer(ctx,CreateTransferParams{
+			FromUserID: arg.FromUserID,
+			ToUserID: arg.ToUserID,
+			Amount: arg.Amount,
+		})
+
+		if err != nil {
+			return err
+		}
+
+		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
+			UserID: arg.FromUserID,
+			Amount: -arg.Amount,
+		})
+
+		if err != nil {
+			return err
+		}
+
+		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
+			UserID: arg.ToUserID,
+			Amount: arg.Amount,
+		})
+
+		if err != nil {
+			return err
+		}
 		return nil
 	})
 
